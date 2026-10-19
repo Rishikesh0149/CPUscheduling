@@ -20,9 +20,17 @@ const routeTitles: Record<string, { title: string; subtitle: string }> = {
     title: 'Algorithm Performance Comparison',
     subtitle: 'Benchmark and compare all 5 scheduling algorithms side-by-side',
   },
+  '/paging': {
+    title: 'Virtual Memory Paging Simulator',
+    subtitle: 'Simulate FIFO, Optimal, LRU, Second Chance (Clock), and LFU with memory frame inspection',
+  },
+  '/ai-agent': {
+    title: 'AI OS Answer Verification Agent',
+    subtitle: 'Verify student calculation accuracy, diagnose logic errors, and learn OS principles',
+  },
   '/about': {
     title: 'About OS Scheduling Project',
-    subtitle: 'Project overview, architecture, and team contributor details',
+    subtitle: 'Project overview, architecture, mentor Vivekananda GN, and team details',
   },
 };
 

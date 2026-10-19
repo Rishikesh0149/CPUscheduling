@@ -8,6 +8,7 @@ import {
   Info,
   Cpu,
   Activity,
+  Bot,
 } from 'lucide-react';
 
 export const Sidebar: React.FC = () => {
@@ -70,6 +71,26 @@ export const Sidebar: React.FC = () => {
         >
           <BarChart3 size={18} />
           <span>Algorithm Compare</span>
+        </NavLink>
+
+        <div className="sidebar-section-title" style={{ marginTop: '1rem' }}>
+          Memory & AI
+        </div>
+
+        <NavLink
+          to="/paging"
+          className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+        >
+          <Layers size={18} />
+          <span>Paging Simulator</span>
+        </NavLink>
+
+        <NavLink
+          to="/ai-agent"
+          className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+        >
+          <Bot size={18} />
+          <span>AI Verification Agent</span>
         </NavLink>
 
         <div className="sidebar-section-title" style={{ marginTop: '1rem' }}>

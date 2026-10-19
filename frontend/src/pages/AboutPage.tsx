@@ -75,18 +75,92 @@ export const AboutPage: React.FC = () => {
           </div>
           <div>
             <h2 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#f1f5f9' }}>
-              OS Process Management & CPU Scheduling Simulator
+              OS Process Management & Memory Paging Simulator
             </h2>
-            <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>
-              College Operating Systems Course Project • Academic Full-Stack Simulation System
-            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '4px', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>
+                College Operating Systems Course Project
+              </span>
+              <span
+                style={{
+                  background: 'rgba(99, 102, 241, 0.2)',
+                  color: '#818cf8',
+                  padding: '2px 10px',
+                  borderRadius: '12px',
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  border: '1px solid rgba(99, 102, 241, 0.4)',
+                }}
+              >
+                Fall Semester 2026-27
+              </span>
+            </div>
           </div>
         </div>
         <p style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', lineHeight: 1.6, marginTop: '10px' }}>
           This application modernizes the traditional Java Swing CPU scheduling simulator into a full-stack,
           real-time web application. It models process state lifecycles and executes both preemptive and
-          non-preemptive CPU scheduling algorithms while generating cycle-accurate Gantt charts and performance analytics.
+          non-preemptive CPU scheduling algorithms, virtual memory paging algorithms (FIFO, OPT, LRU, Second Chance / Clock, LFU),
+          and includes an intelligent AI Answer Verification Agent.
         </p>
+      </div>
+
+      {/* Faculty Mentor Section */}
+      <div
+        className="card"
+        style={{
+          background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(168, 85, 247, 0.08))',
+          border: '1px solid rgba(99, 102, 241, 0.35)',
+          padding: '1.5rem',
+          position: 'relative',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+          <div
+            style={{
+              width: '56px',
+              height: '56px',
+              borderRadius: '14px',
+              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 4px 14px rgba(99, 102, 241, 0.4)',
+              flexShrink: 0,
+            }}
+          >
+            <BookOpen size={28} color="#fff" />
+          </div>
+
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+              <span
+                style={{
+                  background: '#6366f1',
+                  color: '#fff',
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  padding: '3px 8px',
+                  borderRadius: '4px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                }}
+              >
+                Project Mentor
+              </span>
+              <span style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>
+                Academic Course Guide • Fall Semester 2026-27
+              </span>
+            </div>
+            <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#f8fafc', marginTop: '4px' }}>
+              Vivekananda GN
+            </h3>
+            <p style={{ fontSize: '0.85rem', color: '#cbd5e1', lineHeight: 1.5, marginTop: '4px' }}>
+              Faculty Mentor, Department of Computer Science & Engineering. Provided curriculum direction,
+              architectural review, and pedagogical oversight for OS scheduling algorithms, memory management simulation, and AI verification validation.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Team Members Section */}
@@ -268,8 +342,25 @@ export const AboutPage: React.FC = () => {
               The time elapsed from submission until the CPU produces its very first response to the job.
             </p>
           </div>
+
+          <div style={{ background: 'var(--color-bg-secondary)', padding: '1rem', borderRadius: '10px' }}>
+            <h4 style={{ color: '#818cf8', fontSize: '0.9rem', marginBottom: '4px' }}>Page Hit Ratio & Fault Ratio</h4>
+            <code style={{ color: '#10b981', fontFamily: 'var(--font-mono)', fontSize: '0.82rem' }}>Hit Ratio = (Hits / References) × 100%</code>
+            <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', marginTop: '6px' }}>
+              Fault Ratio = 100% - Hit Ratio. Evaluates paging memory cache effectiveness.
+            </p>
+          </div>
+
+          <div style={{ background: 'var(--color-bg-secondary)', padding: '1rem', borderRadius: '10px' }}>
+            <h4 style={{ color: '#f43f5e', fontSize: '0.9rem', marginBottom: '4px' }}>Belady's Anomaly</h4>
+            <code style={{ color: '#10b981', fontFamily: 'var(--font-mono)', fontSize: '0.82rem' }}>Faults(N + 1 frames) &gt; Faults(N frames)</code>
+            <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', marginTop: '6px' }}>
+              Occurs in non-stack algorithms (e.g. FIFO) where increasing physical frame capacity paradoxically increases page faults.
+            </p>
+          </div>
         </div>
       </div>
     </div>
   );
 };
+

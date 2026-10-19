@@ -6,6 +6,8 @@ import {
   CompareResponse,
   AlgorithmComparison,
   Algorithm,
+  SchedulingVerificationRequest,
+  SchedulingVerificationResponse,
 } from '../types';
 
 interface ProcessInfo {
@@ -357,3 +359,164 @@ export function runLocalComparison(timeQuantum: number, processes: Process[]): C
     timeQuantum: timeQuantum || 2,
   };
 }
+
+export function verifyLocalSchedulingAnswer(req: SchedulingVerificationRequest): SchedulingVerificationResponse {
+  const processes: Process[] = req.processes.map((p, idx) => ({
+    pid: p.pid,
+    arrivalTime: p.arrivalTime,
+    burstTime: p.burstTime,
+    priority: p.priority,
+    state: 'READY',
+    inputOrder: idx,
+  }));
+
+  const truth = runLocalAlgorithm(req.algorithm as Algorithm, req.timeQuantum, processes);
+  const breakdown: Record<string, boolean> = {};
+  const discrepancies: string[] = [];
+  const processDiagnostics: string[] = [];
+  const tips: string[] = [];
+  let score = 100;
+
+  if (req.userAvgWaitingTime !== undefined && req.userAvgWaitingTime !== null) {
+    const ok = Math.abs(req.userAvgWaitingTime - truth.avgWaitingTime) < 0.15;
+    breakdown['Average Waiting Time'] = ok;
+    if (!ok) {
+      score -= 30;
+      discrepancies.push(
+        `Your predicted Avg Waiting Time was ${req.userAvgWaitingTime}, but actual is ${truth.avgWaitingTime}.`
+      );
+    }
+  }
+
+  if (req.userAvgTurnaroundTime !== undefined && req.userAvgTurnaroundTime !== null) {
+    const ok = Math.abs(req.userAvgTurnaroundTime - truth.avgTurnaroundTime) < 0.15;
+    breakdown['Average Turnaround Time'] = ok;
+    if (!ok) {
+      score -= 30;
+      discrepancies.push(
+        `Your predicted Avg Turnaround Time was ${req.userAvgTurnaroundTime}, but actual is ${truth.avgTurnaroundTime}.`
+      );
+    }
+  }
+
+  if (req.userAvgResponseTime !== undefined && req.userAvgResponseTime !== null) {
+    const ok = Math.abs(req.userAvgResponseTime - truth.avgResponseTime) < 0.15;
+    breakdown['Average Response Time'] = ok;
+    if (!ok) {
+      score -= 15;
+      discrepancies.push(
+        `Your predicted Avg Response Time was ${req.userAvgResponseTime}, but actual is ${truth.avgResponseTime}.`
+      );
+    }
+  }
+
+  if (req.userFinalClock !== undefined && req.userFinalClock !== null) {
+    const ok = req.userFinalClock === truth.finalClock;
+    breakdown['Total Completion Time (Final Clock)'] = ok;
+    if (!ok) {
+      score -= 15;
+      discrepancies.push(
+        `Your calculated Final Clock was ${req.userFinalClock}, but actual scheduler finished at ${truth.finalClock}.`
+      );
+    }
+  }
+
+  if (req.userProcessResults && req.userProcessResults.length > 0) {
+    const truthMap = new Map(truth.processResults.map((p) => [p.pid, p]));
+    let matched = 0;
+
+    for (const up of req.userProcessResults) {
+      const tp = truthMap.get(up.pid);
+      if (tp) {
+        const ctOk = up.completionTime === tp.completionTime;
+        const tatOk = up.turnaroundTime === tp.turnaroundTime;
+        const wtOk = up.waitingTime === tp.waitingTime;
+
+        if (ctOk && tatOk && wtOk) {
+          matched++;
+          processDiagnostics.push(
+            `Process ${up.pid}: Accurately computed (CT=${tp.completionTime}, TAT=${tp.turnaroundTime}, WT=${tp.waitingTime})`
+          );
+        } else {
+          const parts: string[] = [];
+          if (!ctOk) parts.push(`Predicted CT=${up.completionTime} (Actual=${tp.completionTime})`);
+          if (!tatOk) parts.push(`Predicted TAT=${up.turnaroundTime} (Actual=${tp.turnaroundTime})`);
+          if (!wtOk) parts.push(`Predicted WT=${up.waitingTime} (Actual=${tp.waitingTime})`);
+          processDiagnostics.push(`Process ${up.pid} mismatch: ${parts.join(', ')}`);
+        }
+      }
+    }
+
+    const allOk = matched === truth.processResults.length;
+    breakdown['Process Metrics (CT, TAT, WT)'] = allOk;
+    if (!allOk) score -= 10;
+  }
+
+  if (req.userGanttOrder && req.userGanttOrder.length > 0) {
+    const actualOrder = truth.ganttChart.filter((g) => !g.idle).map((g) => g.pid);
+    const orderOk = JSON.stringify(req.userGanttOrder) === JSON.stringify(actualOrder);
+    breakdown['Gantt Execution Order'] = orderOk;
+    if (!orderOk) {
+      score -= 10;
+      discrepancies.push(
+        `Your execution order [${req.userGanttOrder.join(', ')}] does not match the actual schedule [${actualOrder.join(', ')}].`
+      );
+    }
+  }
+
+  score = Math.max(0, score);
+  const correct = score >= 95;
+
+  let verdictTitle = '';
+  let summaryMessage = '';
+  if (correct) {
+    verdictTitle = 'Verification Passed: 100% Accurate CPU Schedule!';
+    summaryMessage = `Superb work! Your calculations and timeline execution for ${truth.algorithm} are fully verified.`;
+  } else if (score >= 60) {
+    verdictTitle = `Partially Correct (${Math.round(score)}%)`;
+    summaryMessage = `Good try! You understood the dispatch logic, but minor formula or completion calculations deviated.`;
+  } else {
+    verdictTitle = `Discrepancies Detected (${Math.round(score)}%)`;
+    summaryMessage = `The AI Agent flagged discrepancies between your predicted values and the actual execution trace.`;
+  }
+
+  const ganttComparison = truth.ganttChart.map(
+    (g) => `[${g.start} -> ${g.end}] ${g.idle ? 'CPU IDLE' : `Process ${g.pid}`} (Duration: ${g.duration})`
+  );
+
+  const aUpper = truth.algorithm.toUpperCase();
+  if (aUpper.includes('FCFS')) {
+    tips.push('FCFS rule: First-come first-served strictly runs processes in arrival order.');
+    tips.push('Formula reminder: Turnaround Time = Completion Time - Arrival Time (TAT = CT - AT).');
+    tips.push('Formula reminder: Waiting Time = Turnaround Time - Burst Time (WT = TAT - BT).');
+  } else if (aUpper.includes('SJF')) {
+    tips.push('SJF rule: Non-preemptive. Pick the process with the shortest burst time currently arrived.');
+    tips.push('Once executing, the job holds the CPU until completion.');
+  } else if (aUpper.includes('SRTF')) {
+    tips.push('SRTF rule: Preemptive SJF. At each clock tick / arrival, evaluate remaining burst times.');
+    tips.push('Preempt immediately if a newly arrived job has a shorter remaining burst than the current job.');
+  } else if (aUpper.includes('PRIORITY')) {
+    tips.push('Priority rule: Lower number = higher priority. Ties broken by arrival time.');
+  } else if (aUpper.includes('ROUND ROBIN') || aUpper.includes('RR')) {
+    tips.push(`Round Robin rule: Run each job up to quantum = ${truth.timeQuantum} units, then move it to the back of the queue.`);
+    tips.push('New arrivals at the exact time of preemption are queued BEFORE the preempted process.');
+  }
+
+  return {
+    correct,
+    scorePercentage: score,
+    verdictTitle,
+    summaryMessage,
+    actualAvgWaitingTime: truth.avgWaitingTime,
+    actualAvgTurnaroundTime: truth.avgTurnaroundTime,
+    actualAvgResponseTime: truth.avgResponseTime,
+    actualFinalClock: truth.finalClock,
+    breakdown,
+    discrepancies,
+    processDiagnostics,
+    ganttComparison,
+    pedagogicalTips: tips,
+    simulationResult: truth,
+  };
+}
+

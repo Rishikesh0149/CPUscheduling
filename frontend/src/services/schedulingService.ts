@@ -7,8 +7,10 @@ import type {
   CompareRequest,
   CompareResponse,
   SchedulingHistory,
+  SchedulingVerificationRequest,
+  SchedulingVerificationResponse,
 } from '../types';
-import { runLocalAlgorithm, runLocalComparison } from '../utils/localScheduler';
+import { runLocalAlgorithm, runLocalComparison, verifyLocalSchedulingAnswer } from '../utils/localScheduler';
 
 // Local storage key for fallback / offline mode
 const STORAGE_KEY = 'os_scheduler_processes';
@@ -157,5 +159,14 @@ export const schedulingService = {
   getHistoryById: async (id: number): Promise<SchedulingHistory> => {
     const res = await api.get(`/scheduling/history/${id}`);
     return res.data;
+  },
+
+  verifyAnswer: async (request: SchedulingVerificationRequest): Promise<SchedulingVerificationResponse> => {
+    try {
+      const res = await api.post('/scheduling/verify-answer', request);
+      return res.data;
+    } catch {
+      return verifyLocalSchedulingAnswer(request);
+    }
   },
 };

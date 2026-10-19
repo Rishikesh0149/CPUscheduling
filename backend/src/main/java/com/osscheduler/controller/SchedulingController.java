@@ -1,9 +1,6 @@
 package com.osscheduler.controller;
 
-import com.osscheduler.dto.CompareRequest;
-import com.osscheduler.dto.CompareResponse;
-import com.osscheduler.dto.SchedulingRequest;
-import com.osscheduler.dto.SchedulingResponse;
+import com.osscheduler.dto.*;
 import com.osscheduler.model.SchedulingHistory;
 import com.osscheduler.service.SchedulingService;
 import jakarta.validation.Valid;
@@ -63,5 +60,15 @@ public class SchedulingController {
     @GetMapping("/history/{id}")
     public ResponseEntity<SchedulingHistory> getHistoryById(@PathVariable Long id) {
         return ResponseEntity.ok(schedulingService.getHistoryById(id));
+    }
+
+    /**
+     * POST /api/scheduling/verify-answer
+     * AI Agent endpoint that grades and verifies student CPU scheduling answers.
+     */
+    @PostMapping("/verify-answer")
+    public ResponseEntity<SchedulingVerificationResponse> verifySchedulingAnswer(
+            @Valid @RequestBody SchedulingVerificationRequest request) {
+        return ResponseEntity.ok(schedulingService.verifySchedulingAnswer(request));
     }
 }

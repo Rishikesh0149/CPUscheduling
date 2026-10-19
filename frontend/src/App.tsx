@@ -8,6 +8,8 @@ import { DashboardPage } from './pages/DashboardPage';
 import { ProcessManagementPage } from './pages/ProcessManagementPage';
 import { SimulationPage } from './pages/SimulationPage';
 import { ComparisonPage } from './pages/ComparisonPage';
+import { PagingSimulationPage } from './pages/PagingSimulationPage';
+import { AIVerificationPage } from './pages/AIVerificationPage';
 import { AboutPage } from './pages/AboutPage';
 
 export const App: React.FC = () => {
@@ -25,6 +27,8 @@ export const App: React.FC = () => {
               <Route path="/processes" element={<ProcessManagementPage onNotify={addToast} />} />
               <Route path="/simulation" element={<SimulationPage onNotify={addToast} />} />
               <Route path="/compare" element={<ComparisonPage onNotify={addToast} />} />
+              <Route path="/paging" element={<PagingSimulationPage onNotify={addToast} />} />
+              <Route path="/ai-agent" element={<AIVerificationPage onNotify={addToast} />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

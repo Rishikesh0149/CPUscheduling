@@ -256,6 +256,44 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNotify }) => {
               <BarChart3 size={15} color="var(--color-teal)" /> Compare 5 Algorithms
             </button>
 
+            <button
+              onClick={() => navigate('/paging')}
+              style={{
+                background: 'rgba(99, 102, 241, 0.15)',
+                border: '1px solid #6366f1',
+                color: '#818cf8',
+                padding: '0.5rem 1rem',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontSize: '0.85rem',
+                fontWeight: 600,
+              }}
+            >
+              <Layers size={15} color="#818cf8" /> Paging Simulator
+            </button>
+
+            <button
+              onClick={() => navigate('/ai-agent')}
+              style={{
+                background: 'rgba(168, 85, 247, 0.15)',
+                border: '1px solid #a855f7',
+                color: '#c084fc',
+                padding: '0.5rem 1rem',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontSize: '0.85rem',
+                fontWeight: 600,
+              }}
+            >
+              <Zap size={15} color="#c084fc" /> AI Verification Agent
+            </button>
+
             {totalCount > 0 && (
               <button
                 onClick={handleClearAll}
@@ -276,6 +314,89 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNotify }) => {
               </button>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* New Features Spotlight Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.25rem' }}>
+        <div
+          className="card"
+          style={{
+            background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(16, 185, 129, 0.08))',
+            border: '1px solid rgba(99, 102, 241, 0.35)',
+            cursor: 'pointer',
+          }}
+          onClick={() => navigate('/paging')}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div
+                style={{
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '10px',
+                  background: '#6366f1',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Layers size={20} color="#fff" />
+              </div>
+              <div>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#f8fafc' }}>
+                  Virtual Memory Paging Simulator
+                </h3>
+                <span style={{ fontSize: '0.72rem', color: '#10b981', fontWeight: 700, textTransform: 'uppercase' }}>
+                  NEW FEATURE • 5 ALGORITHMS
+                </span>
+              </div>
+            </div>
+            <ArrowRight size={18} color="#818cf8" />
+          </div>
+          <p style={{ fontSize: '0.82rem', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
+            Simulate <strong>FIFO</strong>, <strong>Optimal (OPT)</strong>, <strong>LRU</strong>, <strong>Second Chance (Clock)</strong>, and <strong>LFU</strong> with live memory frame scrubbing, hit/fault matrices, and Belady's Anomaly tests.
+          </p>
+        </div>
+
+        <div
+          className="card"
+          style={{
+            background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.12), rgba(245, 158, 11, 0.08))',
+            border: '1px solid rgba(168, 85, 247, 0.35)',
+            cursor: 'pointer',
+          }}
+          onClick={() => navigate('/ai-agent')}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div
+                style={{
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '10px',
+                  background: '#a855f7',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Zap size={20} color="#fff" />
+              </div>
+              <div>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#f8fafc' }}>
+                  AI Answer Verification Agent
+                </h3>
+                <span style={{ fontSize: '0.72rem', color: '#a855f7', fontWeight: 700, textTransform: 'uppercase' }}>
+                  NEW FEATURE • AUTOMATED GRADER
+                </span>
+              </div>
+            </div>
+            <ArrowRight size={18} color="#c084fc" />
+          </div>
+          <p style={{ fontSize: '0.82rem', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
+            Solve OS memory and paging problems by hand, submit your predicted faults and hits, and receive step-by-step verification, mistake diagnostics, and pedagogical tips from the AI Agent.
+          </p>
         </div>
       </div>
 
